@@ -8,15 +8,7 @@
 #include <queue>
 #include <fstream>
 #include <thread>
-
-enum class LogLevel
-{
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR,
-  CRITICAL
-};
+#include "logutil.h"
 
 struct LogLine
 {
@@ -26,16 +18,14 @@ struct LogLine
   std::string timestamp;
 };
 
-std::string logLevelToString(LogLevel level);
-const long long getThreadID();
-
 class Logger
 {
   // The Logger class is responsible for managing log messages and writing them to a file.
   // It includes methods for logging messages at different levels and writing them to a file.
   // The logger can be configured with various options.
 public:
-  Logger(const std::string &name, const std::filesystem::path &logFilePath);
+  Logger(const std::string &name, const std::filesystem::path &logFilePath,
+         bool printToConsole = false, LogLevel minimumLogLevel = LogLevel::DEBUG);
   ~Logger();
   const LogLevel &getMinimumLogLevel() const;
   const std::filesystem::path getLogFilePath() const;
@@ -47,12 +37,14 @@ public:
   void critical(const std::string &message);
 
 private:
+  const std::string name_;
+  const bool printToConsole_;
+  std::ofstream logFile_;
+  const LogLevel minimumLogLevel_;
+
+  // Methods to log messages and write them to the specified stream.
   void processLogQueue_();
   void writeLine_(const LogLine &logLine);
-  const std::string name_;
-  const bool printToConsole_{false};
-  std::ofstream logFile_;
-  const LogLevel minimumLogLevel_{LogLevel::DEBUG};
   void log_(const std::string &message, LogLevel level);
 
   // These variables are used for thread-safe logging.

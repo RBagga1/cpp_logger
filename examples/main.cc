@@ -14,13 +14,23 @@ int main()
     std::cout << "Main thread id: " << getThreadID() << std::endl;
 
     const std::string LOGFILE_PATH = "./log.log";
-    Logger logger("CVLogger", LOGFILE_PATH);
+    Logger logger = LoggerBuilder()
+                        .setName("CVLogger")
+                        .setLogFilePath(LOGFILE_PATH)
+                        .setPrintToConsole(true)
+                        .build();
     logger.info("Logger initialized");
     logger.debug("Debugging information");
     logger.warning("This is a warning");
     logger.error("An error occurred");
     logger.critical("Critical issue encountered");
     std::cout << "Logging completed." << std::endl;
+
+    for (int i = 0; i < 5; i++)
+    {
+        logger.info("Main thread is working on task " + std::to_string(i));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
 
     std::vector<std::thread> threads;
     for (int i = 0; i < 5; i++)
@@ -33,22 +43,5 @@ int main()
         threads[i].join();
     }
 
-    FILE *logFile = fopen(LOGFILE_PATH.c_str(), "r");
-    if (!logFile)
-    {
-        std::cerr << "Failed to open log file: " << LOGFILE_PATH << std::endl;
-        return 1;
-    }
-
-    char buffer[1024];
-    while (fgets(buffer, sizeof(buffer), logFile))
-    {
-        std::cout << buffer;
-    }
-
-    if (logFile)
-    {
-        fclose(logFile);
-    }
     return 0;
 }

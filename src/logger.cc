@@ -1,35 +1,9 @@
 #include <iostream>
 #include "logger.h"
 
-std::string logLevelToString(LogLevel level)
-{
-  switch (level)
-  {
-  case LogLevel::DEBUG:
-    return "DEBUG";
-  case LogLevel::INFO:
-    return "INFO";
-  case LogLevel::WARNING:
-    return "WARNING";
-  case LogLevel::ERROR:
-    return "ERROR";
-  case LogLevel::CRITICAL:
-    return "CRITICAL";
-  default:
-    return "UNKNOWN";
-  }
-}
-
-const long long getThreadID()
-{
-  std::stringstream ss;
-  ss << std::this_thread::get_id();
-  return std::stoll(ss.str());
-}
-
 // Logger class implementation
-Logger::Logger(const std::string &name, const std::filesystem::path &logFilePath)
-    : name_(name), logFile_(logFilePath, std::ios::app)
+Logger::Logger(const std::string &name, const std::filesystem::path &logFilePath, bool printToConsole, LogLevel minimumLogLevel)
+    : name_(name), logFile_(logFilePath, std::ios::app), printToConsole_(printToConsole), minimumLogLevel_(minimumLogLevel)
 {
   workerThread_ = std::thread(&Logger::processLogQueue_, this);
 }
@@ -191,5 +165,5 @@ Logger LoggerBuilder::build() const
     throw std::runtime_error("Log file path cannot be empty.");
   }
 
-  return Logger(name_, logFilePath_);
+  return Logger(name_, logFilePath_, printToConsole_, minimumLogLevel_);
 }
