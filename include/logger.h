@@ -33,7 +33,7 @@ class Logger
 {
   // The Logger class is responsible for managing log messages and writing them to a file.
   // It includes methods for logging messages at different levels and writing them to a file.
-  // The logger can be configured with a name, log file path, and default logging level.
+  // The logger can be configured with various options.
 public:
   Logger(const std::string &name, const std::filesystem::path &logFilePath);
   ~Logger();
@@ -50,6 +50,7 @@ private:
   void processLogQueue_();
   void writeLine_(const LogLine &logLine);
   const std::string name_;
+  const bool printToConsole_{false};
   std::ofstream logFile_;
   const LogLevel minimumLogLevel_{LogLevel::DEBUG};
   void log_(const std::string &message, LogLevel level);
@@ -60,6 +61,26 @@ private:
   std::mutex logQueueMutex_;
   std::condition_variable cv_;
   std::thread workerThread_;
+};
+
+class LoggerBuilder
+{
+  // The Builder class is used to create a Logger instance with a fluent interface.
+  // It allows customizing various options when creating a Logger object.
+public:
+  LoggerBuilder();
+  ~LoggerBuilder();
+  LoggerBuilder &setName(const std::string &name);
+  LoggerBuilder &setPrintToConsole(bool enabled);
+  LoggerBuilder &setLogFilePath(const std::filesystem::path &logFilePath);
+  LoggerBuilder &setMinimumLogLevel(LogLevel level);
+  Logger build() const;
+
+private:
+  std::string name_;
+  bool printToConsole_{false};
+  std::filesystem::path logFilePath_;
+  LogLevel minimumLogLevel_{LogLevel::DEBUG};
 };
 
 #endif // LOGGER_H

@@ -26,6 +26,7 @@ const long long getThreadID()
   return std::stoll(ss.str());
 }
 
+// Logger class implementation
 Logger::Logger(const std::string &name, const std::filesystem::path &logFilePath)
     : name_(name), logFile_(logFilePath, std::ios::app)
 {
@@ -139,4 +140,46 @@ void Logger::log_(const std::string &message, LogLevel level)
   }
 
   cv_.notify_one();
+}
+
+// LoggerBuilder implementation
+LoggerBuilder::LoggerBuilder() {};
+LoggerBuilder::~LoggerBuilder() {};
+
+LoggerBuilder &LoggerBuilder::setName(const std::string &name)
+{
+  name_ = name;
+  return *this;
+}
+
+LoggerBuilder &LoggerBuilder::setPrintToConsole(bool enabled)
+{
+  printToConsole_ = enabled;
+  return *this;
+}
+
+LoggerBuilder &LoggerBuilder::setLogFilePath(const std::filesystem::path &logFilePath)
+{
+  logFilePath_ = logFilePath;
+  return *this;
+}
+
+LoggerBuilder &LoggerBuilder::setMinimumLogLevel(LogLevel level)
+{
+  minimumLogLevel_ = level;
+  return *this;
+}
+
+Logger LoggerBuilder::build() const
+{
+  if (name_.empty())
+  {
+    throw std::runtime_error("Logger name cannot be empty.");
+  }
+  if (logFilePath_.empty())
+  {
+    throw std::runtime_error("Log file path cannot be empty.");
+  }
+
+  return Logger(name_, logFilePath_);
 }
