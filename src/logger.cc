@@ -1,3 +1,4 @@
+#include <iostream>
 #include "logger.h"
 
 std::string logLevelToString(LogLevel level)
@@ -78,10 +79,19 @@ void Logger::processLogQueue_()
 
 void Logger::writeLine_(const LogLine &logLine)
 {
+  if (printToConsole_)
+  {
+    std::cout << logLine.timestamp
+              << " [thread: " << logLine.threadID << "]"
+              << " [<" << getName() << "> " << logLevelToString(logLine.level) << "] - "
+              << logLine.message << "\n";
+    return;
+  }
+
   if (logFile_.is_open())
   {
     logFile_ << logLine.timestamp
-             << " [ thread: " << logLine.threadID << "]"
+             << " [thread: " << logLine.threadID << "]"
              << " [<" << getName() << "> " << logLevelToString(logLine.level) << "] - "
              << logLine.message << "\n";
   }
@@ -176,7 +186,7 @@ Logger LoggerBuilder::build() const
   {
     throw std::runtime_error("Logger name cannot be empty.");
   }
-  if (logFilePath_.empty())
+  if (logFilePath_.empty() && !printToConsole_)
   {
     throw std::runtime_error("Log file path cannot be empty.");
   }
