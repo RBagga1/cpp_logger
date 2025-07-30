@@ -5,9 +5,10 @@ I am using this to brush up my C++ skills, so any feedback is welcome.
 
 ## Features
 * Logger supports:
-  * naming
+  * naming the logger
   * 5 different levels of logging
   * thread id for multi-threaded applications
+  * filtering based on a specified minimum log level
 * Logger implemented with a queue and it's own worker thread to prevent blocking any other important tasks.
   * Conditional variables and locks to ensure the enqueued messages to log are logged in the correct order, and no collisions happen between anything enqueuing messages into the logger.
 * Logger will cleanup on it's own when deconstructed.
@@ -20,7 +21,6 @@ I am using this to brush up my C++ skills, so any feedback is welcome.
   * color of the line outputted.
   * toggling thread ids in log output.
   * toggling color in log output.
-* Minimum log levels to filter.
 
 #### Possible Tasks
 * Log rotation:

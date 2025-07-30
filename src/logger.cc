@@ -118,6 +118,11 @@ void Logger::critical(const std::string &message)
 // TODO - Check if the log level is below the minimum log level before logging
 void Logger::log_(const std::string &message, LogLevel level)
 {
+  if (level < minimumLogLevel_)
+  {
+    return; // Skip if below min logging level
+  }
+
   long long threadID = getThreadID();
 
   // Creating the timestamp
