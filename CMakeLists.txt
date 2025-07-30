@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
 
 ## Logger Library
-add_library(logger src/Logger.cc)
+add_library(logger src/logger.cc)
 
 # Make the 'include' dir available to our library and anything that uses it
 target_include_directories(logger

@@ -1,4 +1,4 @@
-#include "Logger.h"
+#include "logger.h"
 
 std::string logLevelToString(LogLevel level)
 {

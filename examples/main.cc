@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include <thread>
-#include "Logger.h"
+#include "logger.h"
 
 void doWork(Logger &logger)
 {
