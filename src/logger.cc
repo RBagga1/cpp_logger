@@ -2,8 +2,19 @@
 #include "logger.h"
 
 // Logger class implementation
-Logger::Logger(const std::string &name, const std::filesystem::path &logFilePath, bool printToConsole, LogLevel minimumLogLevel)
-    : name_(name), logFile_(logFilePath, std::ios::app), printToConsole_(printToConsole), minimumLogLevel_(minimumLogLevel)
+Logger::Logger(
+    const std::string &name,
+    const std::filesystem::path &logFilePath,
+    bool printToConsole,
+    bool logThreadIDs,
+    bool logSelfName,
+    LogLevel minimumLogLevel)
+    : name_(name),
+      logFile_(logFilePath, std::ios::app),
+      printToConsole_(printToConsole),
+      logThreadIDs_(logThreadIDs),
+      logSelfName_(logSelfName),
+      minimumLogLevel_(minimumLogLevel)
 {
   workerThread_ = std::thread(&Logger::processLogQueue_, this);
 }
@@ -141,6 +152,18 @@ LoggerBuilder &LoggerBuilder::setPrintToConsole(bool enabled)
   return *this;
 }
 
+LoggerBuilder &LoggerBuilder::setLogThreadIDs(bool enabled)
+{
+  logThreadIDs_ = enabled;
+  return *this;
+}
+
+LoggerBuilder &LoggerBuilder::setLogSelfName(bool enabled)
+{
+  logSelfName_ = enabled;
+  return *this;
+}
+
 LoggerBuilder &LoggerBuilder::setLogFilePath(const std::filesystem::path &logFilePath)
 {
   logFilePath_ = logFilePath;
@@ -164,5 +187,5 @@ Logger LoggerBuilder::build() const
     throw std::runtime_error("Log file path cannot be empty.");
   }
 
-  return Logger(name_, logFilePath_, printToConsole_, minimumLogLevel_);
+  return Logger(name_, logFilePath_, printToConsole_, logThreadIDs_, logSelfName_, minimumLogLevel_);
 }

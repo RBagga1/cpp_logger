@@ -39,3 +39,6 @@ build/*
 log/*
 logs/*
 *.log
+
+# Ignore vscode settings
+.vscode/*

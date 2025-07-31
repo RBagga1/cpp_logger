@@ -24,8 +24,12 @@ class Logger
   // It includes methods for logging messages at different levels and writing them to a file.
   // The logger can be configured with various options.
 public:
-  Logger(const std::string &name, const std::filesystem::path &logFilePath,
-         bool printToConsole = false, LogLevel minimumLogLevel = LogLevel::DEBUG);
+  Logger(const std::string &name,
+         const std::filesystem::path &logFilePath,
+         bool printToConsole = false,
+         bool logThreadIDs = false,
+         bool logSelfName = false,
+         LogLevel minimumLogLevel = LogLevel::DEBUG);
   ~Logger();
   const LogLevel &getMinimumLogLevel() const;
   const std::filesystem::path getLogFilePath() const;
@@ -38,7 +42,9 @@ public:
 
 private:
   const std::string name_;
-  const bool printToConsole_;
+  const bool printToConsole_; // Whether to print logs to the console
+  const bool logThreadIDs_;   // Whether to log thread IDs in each log line
+  const bool logSelfName_;    // Whether to log the logger's name in each log line
   std::ofstream logFile_;
   const LogLevel minimumLogLevel_;
 
@@ -64,6 +70,8 @@ public:
   ~LoggerBuilder();
   LoggerBuilder &setName(const std::string &name);
   LoggerBuilder &setPrintToConsole(bool enabled);
+  LoggerBuilder &setLogThreadIDs(bool enabled);
+  LoggerBuilder &setLogSelfName(bool enabled);
   LoggerBuilder &setLogFilePath(const std::filesystem::path &logFilePath);
   LoggerBuilder &setMinimumLogLevel(LogLevel level);
   Logger build() const;
@@ -71,6 +79,8 @@ public:
 private:
   std::string name_;
   bool printToConsole_{false};
+  bool logThreadIDs_{false};
+  bool logSelfName_{false};
   std::filesystem::path logFilePath_;
   LogLevel minimumLogLevel_{LogLevel::DEBUG};
 };
