@@ -100,7 +100,6 @@ void Logger::critical(const std::string &message)
   log_(message, LogLevel::CRITICAL);
 }
 
-// TODO - Check if the log level is below the minimum log level before logging
 void Logger::log_(const std::string &message, LogLevel level)
 {
   if (level < minimumLogLevel_)
