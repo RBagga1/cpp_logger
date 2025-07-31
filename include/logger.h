@@ -7,6 +7,7 @@
 #include <condition_variable>
 #include <queue>
 #include <fstream>
+#include <sstream>
 #include <thread>
 #include "logutil.h"
 
@@ -52,6 +53,7 @@ private:
   void processLogQueue_();
   void writeLine_(const LogLine &logLine);
   void log_(const std::string &message, LogLevel level);
+  const std::string getFormattedLogLine(const LogLine &logLine) const;
 
   // These variables are used for thread-safe logging.
   bool loggingDone_{false};

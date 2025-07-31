@@ -64,21 +64,16 @@ void Logger::processLogQueue_()
 
 void Logger::writeLine_(const LogLine &logLine)
 {
+  std::string formattedLogMessage = getFormattedLogLine(logLine);
   if (printToConsole_)
   {
-    std::cout << logLine.timestamp
-              << " [thread: " << logLine.threadID << "]"
-              << " [<" << getName() << "> " << logLevelToString(logLine.level) << "] - "
-              << logLine.message << "\n";
+    std::cout << formattedLogMessage;
     return;
   }
 
   if (logFile_.is_open())
   {
-    logFile_ << logLine.timestamp
-             << " [thread: " << logLine.threadID << "]"
-             << " [<" << getName() << "> " << logLevelToString(logLine.level) << "] - "
-             << logLine.message << "\n";
+    logFile_ << formattedLogMessage;
   }
   else
   {
@@ -134,6 +129,18 @@ void Logger::log_(const std::string &message, LogLevel level)
   }
 
   cv_.notify_one();
+}
+
+const std::string Logger::getFormattedLogLine(const LogLine &logLine) const
+{
+  std::stringstream ss;
+  ss << logLine.timestamp;
+  logThreadIDs_ ? ss << " [thread: " << logLine.threadID << "]" : ss;
+  logSelfName_ ? ss << " [<" + getName() + "> " + logLevelToString(logLine.level) + "] - "
+               : ss << " [" + logLevelToString(logLine.level) + "] - ";
+  ss << logLine.message;
+  ss << "\n";
+  return ss.str();
 }
 
 // LoggerBuilder implementation
