@@ -10,15 +10,45 @@ Logger::Logger(
     bool logSelfName,
     LogLevel minimumLogLevel)
     : name_(name),
-      logFile_(logFilePath, std::ios::app),
+      logFilePath_(logFilePath),
       printToConsole_(printToConsole),
       logThreadIDs_(logThreadIDs),
       logSelfName_(logSelfName),
       minimumLogLevel_(minimumLogLevel)
 {
+  if (name_.empty())
+  {
+    throw std::runtime_error("Logger name cannot be empty.");
+  }
+  if (logFilePath.empty() && !printToConsole_)
+  {
+    throw std::runtime_error("Log file path cannot be empty if console output is disabled.");
+  }
+
+  // Create directories if log file path is specified
+  if (!logFilePath.empty())
+  {
+    std::filesystem::path parentDir = logFilePath.parent_path();
+    if (!parentDir.empty())
+    {
+      std::error_code ec;
+      std::filesystem::create_directories(parentDir, ec);
+      if (ec)
+      {
+        throw std::runtime_error("Failed to create directories for log file path: " + ec.message());
+      }
+    }
+
+    // Open the log file after ensuring directories exist
+    logFile_.open(logFilePath, std::ios::app);
+    if (!logFile_.is_open())
+    {
+      throw std::runtime_error("Failed to open log file: " + logFilePath.string());
+    }
+  }
+
   workerThread_ = std::thread(&Logger::processLogQueue_, this);
 }
-
 Logger::~Logger()
 {
   {
@@ -37,6 +67,11 @@ const LogLevel &Logger::getMinimumLogLevel() const
 const std::string &Logger::getName() const
 {
   return name_;
+}
+
+const std::filesystem::path Logger::getLogFilePath() const
+{
+  return logFilePath_;
 }
 
 void Logger::processLogQueue_()
@@ -68,7 +103,11 @@ void Logger::writeLine_(const LogLine &logLine)
   if (printToConsole_)
   {
     std::cout << formattedLogMessage;
-    return;
+  }
+
+  if (getLogFilePath().empty())
+  {
+    return; // If no log file path is set, do not write to file. We already printed to console.
   }
 
   if (logFile_.is_open())

@@ -43,9 +43,10 @@ public:
 
 private:
   const std::string name_;
-  const bool printToConsole_; // Whether to print logs to the console
-  const bool logThreadIDs_;   // Whether to log thread IDs in each log line
-  const bool logSelfName_;    // Whether to log the logger's name in each log line
+  const std::filesystem::path logFilePath_; // Store the log file path
+  const bool printToConsole_;               // Whether to print logs to the console
+  const bool logThreadIDs_;                 // Whether to log thread IDs in each log line
+  const bool logSelfName_;                  // Whether to log the logger's name in each log line
   std::ofstream logFile_;
   const LogLevel minimumLogLevel_;
 
