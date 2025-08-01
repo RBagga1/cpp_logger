@@ -147,36 +147,57 @@ const std::string Logger::getFormattedLogLine(const LogLine &logLine) const
 LoggerBuilder::LoggerBuilder() {};
 LoggerBuilder::~LoggerBuilder() {};
 
+/** Set the name of the logger. */
 LoggerBuilder &LoggerBuilder::setName(const std::string &name)
 {
   name_ = name;
   return *this;
 }
 
+/**
+ * Set whether to print log messages to the console.
+ * @param enabled True to enable console output, false by default.
+ */
 LoggerBuilder &LoggerBuilder::setPrintToConsole(bool enabled)
 {
   printToConsole_ = enabled;
   return *this;
 }
 
+/**
+ * Set whether to log thread IDs in each log line.
+ * @param enabled True to enable thread ID logging, false by default.
+ */
 LoggerBuilder &LoggerBuilder::setLogThreadIDs(bool enabled)
 {
   logThreadIDs_ = enabled;
   return *this;
 }
 
+/**
+ * Set whether to log the logger's name in each log line.
+ * @param enabled True to enable logger name logging, false by default.
+ */
 LoggerBuilder &LoggerBuilder::setLogSelfName(bool enabled)
 {
   logSelfName_ = enabled;
   return *this;
 }
 
+/**
+ * Set the file path for the log file.
+ * @param logFilePath The path to the log file.
+ */
 LoggerBuilder &LoggerBuilder::setLogFilePath(const std::filesystem::path &logFilePath)
 {
   logFilePath_ = logFilePath;
   return *this;
 }
 
+/**
+ * Set the minimum log level for the logger.
+ * @param level The minimum log level to log messages. Default is LogLevel::DEBUG.
+ */
 LoggerBuilder &LoggerBuilder::setMinimumLogLevel(LogLevel level)
 {
   minimumLogLevel_ = level;

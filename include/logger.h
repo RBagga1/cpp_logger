@@ -70,12 +70,12 @@ class LoggerBuilder
 public:
   LoggerBuilder();
   ~LoggerBuilder();
-  LoggerBuilder &setName(const std::string &name);
-  LoggerBuilder &setPrintToConsole(bool enabled);
-  LoggerBuilder &setLogThreadIDs(bool enabled);
-  LoggerBuilder &setLogSelfName(bool enabled);
-  LoggerBuilder &setLogFilePath(const std::filesystem::path &logFilePath);
-  LoggerBuilder &setMinimumLogLevel(LogLevel level);
+  LoggerBuilder &setName(const std::string &name);                         // Set the name of the logger
+  LoggerBuilder &setPrintToConsole(bool enabled);                          // Set whether to print log messages to the console
+  LoggerBuilder &setLogThreadIDs(bool enabled);                            // Set whether to log thread IDs in each log line
+  LoggerBuilder &setLogSelfName(bool enabled);                             // Set whether to log the logger's name in each log line
+  LoggerBuilder &setLogFilePath(const std::filesystem::path &logFilePath); // Set the file path for the log file
+  LoggerBuilder &setMinimumLogLevel(LogLevel level);                       // Set the minimum log level for the logger
   Logger build() const;
 
 private:
