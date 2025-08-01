@@ -65,26 +65,45 @@ To see the logger work, run the example executable from the project's root direc
 ```
 
 ## Usage
-### An Example of how the logger works:
+### Creating a Logger using the Builder Pattern
 
-This will run the example and generate a log file in the project's root directory.
+Use the `LoggerBuilder` to create a logger with the desired configuration:
+
 ```cpp
-#include "Logger.h"
+#include "logger.h"
 
 int main() {
-    // Create a logger instance
-    Logger my_logger("MyApp", "my_app.log");
+    // Create a logger instance using the builder pattern
+    Logger myLogger = LoggerBuilder()
+        .setName("MyApp")                           // Set logger name
+        .setLogFilePath("logs/application.log")     // Set log file path (creates directories automatically)
+        .setPrintToConsole(true)                    // Enable console output
+        .setLogThreadIDs(true)                      // Include thread IDs in logs
+        .setLogSelfName(true)                       // Include logger name in logs
+        .setMinimumLogLevel(LogLevel::INFO)         // Set minimum log level
+        .build();
 
-    // Log messages at different levels
-    my_logger.info("This is an informational message.");
-    my_logger.critical("This is a critical error!");
+    // Use the 5 main logging levels
+    myLogger.debug("This is a debug message");           // LogLevel::DEBUG
+    myLogger.info("This is an informational message");   // LogLevel::INFO
+    myLogger.warning("This is a warning message");       // LogLevel::WARNING
+    myLogger.error("This is an error message");          // LogLevel::ERROR
+    myLogger.critical("This is a critical message");     // LogLevel::CRITICAL
 
     return 0; // Logger cleans up automatically
 }
 ```
 
 ### Example Log Output
-YYYY-MM-DD HH:MM:SS [ thread: 140132... ] [<MyApp> CRITICAL] - This is a critical error!
+```
+2025-08-01 10:30:15 [thread: 140132456789] [<MyApp> DEBUG] - This is a debug message
+2025-08-01 10:30:15 [thread: 140132456789] [<MyApp> INFO] - This is an informational message
+2025-08-01 10:30:15 [thread: 140132456789] [<MyApp> WARNING] - This is a warning message  
+2025-08-01 10:30:15 [thread: 140132456789] [<MyApp> ERROR] - This is an error message
+2025-08-01 10:30:15 [thread: 140132456789] [<MyApp> CRITICAL] - This is a critical message
+```
+
+* Thread IDs and the Logger Name "MyAPP" in this case, can be removed from the log output.
 
 ## Authors
 * **Ram Bagga** - [@rbagga1](https://www.github.com/RBagga1)

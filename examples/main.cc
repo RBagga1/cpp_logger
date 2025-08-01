@@ -1,47 +1,62 @@
-#include <iostream>
-#include <memory>
-#include <vector>
-#include <thread>
 #include "logger.h"
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <chrono>
 
-void doWork(Logger &logger)
+const std::filesystem::path LOG_FILE_PATH = "example.log";
+
+// A simple function that simulates work and logs a message
+void doWork(Logger &logger, int task_id)
 {
-    logger.debug(std::to_string(getThreadID()) + " - Doing work");
+    logger.info("Worker thread " + std::to_string(getThreadID()) + " starting task " + std::to_string(task_id));
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    logger.debug("Worker thread " + std::to_string(getThreadID()) + " finished task " + std::to_string(task_id));
 }
 
 int main()
 {
-    std::cout << "Main thread id: " << getThreadID() << std::endl;
+    // --- Advanced Logger Configuration ---
+    // Use the LoggerBuilder for a fluent and readable setup.
+    // This logger will write to both a file and the console.
+    std::cout << "Initializing advanced logger..." << std::endl;
+    Logger advanced_logger = LoggerBuilder()
+                                 .setName("WebApp")
+                                 .setLogFilePath(LOG_FILE_PATH)
+                                 .setMinimumLogLevel(LogLevel::DEBUG)
+                                 .setPrintToConsole(true)
+                                 .setLogThreadIDs(true)
+                                 .setLogSelfName(true)
+                                 .build();
 
-    const std::string LOGFILE_PATH = "./log.log";
-    Logger logger = LoggerBuilder()
-                        .setName("CVLogger")
-                        .setLogFilePath(LOGFILE_PATH)
-                        .setPrintToConsole(true)
-                        .build();
-    logger.info("Logger initialized");
-    logger.debug("Debugging information");
-    logger.warning("This is a warning");
-    logger.error("An error occurred");
-    logger.critical("Critical issue encountered");
-    std::cout << "Logging completed." << std::endl;
+    advanced_logger.critical("This is a critical issue from the 'WebApp' logger.");
+    advanced_logger.info("Logger initialized. Starting main application tasks.");
 
-    for (int i = 0; i < 5; i++)
+    // --- Main Thread Work ---
+    for (int i = 0; i < 3; ++i)
     {
-        logger.info("Main thread is working on task " + std::to_string(i));
+        advanced_logger.info("Main thread is working on task " + std::to_string(i));
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
+    // --- Multi-threaded Logging ---
+    // thread-safe logging from multiple worker threads.
     std::vector<std::thread> threads;
-    for (int i = 0; i < 5; i++)
+    advanced_logger.info("Spawning 5 worker threads...");
+    for (int i = 0; i < 5; ++i)
     {
-        threads.emplace_back(doWork, std::ref(logger));
+        // std::ref() is used to pass the logger by reference to the thread.
+        threads.emplace_back(doWork, std::ref(advanced_logger), i);
     }
 
-    for (int i = 0; i < 5; i++)
+    // Wait for all threads to complete their work.
+    for (auto &t : threads)
     {
-        threads[i].join();
+        t.join();
     }
+
+    advanced_logger.info("All worker threads have finished.");
+    std::cout << "Example finished. Check " << LOG_FILE_PATH << " and console for output." << std::endl;
 
     return 0;
 }
